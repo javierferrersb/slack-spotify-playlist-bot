@@ -2,8 +2,11 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import CacheHandler
 from dotenv import load_dotenv
+import logging
 import os
 import json
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -15,12 +18,41 @@ PLAYLIST_ID = os.getenv("PLAYLIST_ID")
 
 
 class EnvCacheHandler(CacheHandler):
-    def get_cached_token(self):
-        cache_data = os.getenv("SPOTIFY_AUTH_CACHE")
-        return json.loads(cache_data) if cache_data else None
+    """
+    A cache handler that stores the token info in environment variables.
+    """
 
-    def save_token_info(self, token_info):
-        os.environ["SPOTIFY_AUTH_CACHE"] = json.dumps(token_info)
+    def __init__(self, env_var="SPOTIFY_AUTH_CACHE"):
+        """
+        Parameters:
+            * env_var: The environment variable used to store the token.
+        """
+        self.env_var = env_var
+
+    def get_cached_token(self):
+        """
+        Retrieve the token from the environment variable.
+        """
+        token_info = None
+        try:
+            token_info_str = os.getenv(self.env_var)
+            if token_info_str:
+                token_info = json.loads(token_info_str)
+        except (json.JSONDecodeError, TypeError) as e:
+            logger.warning(
+                f"Error decoding token from environment variable {self.env_var}: {e}")
+
+        return token_info
+
+    def save_token_to_cache(self, token_info):
+        """
+        Store the token in the environment variable.
+        """
+        try:
+            os.environ[self.env_var] = json.dumps(token_info)
+        except Exception as e:
+            logger.warning(
+                f"Error saving token to environment variable {self.env_var}: {e}")
 
 
 # Authenticate
