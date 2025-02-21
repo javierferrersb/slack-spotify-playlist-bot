@@ -11,13 +11,25 @@ SPOTIPY_CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
 SPOTIPY_REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI")
 PLAYLIST_ID = os.getenv("PLAYLIST_ID")
 
+# Handle cache
+cache_file = ".spotify_cache"
+
+# Load auth cache from environment variable
+if os.getenv("SPOTIFY_AUTH_CACHE"):
+    with open(cache_file, "w") as f:
+        f.write(os.getenv("SPOTIFY_AUTH_CACHE"))
+
 # Authenticate
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=SPOTIPY_CLIENT_ID,
     client_secret=SPOTIPY_CLIENT_SECRET,
     redirect_uri=SPOTIPY_REDIRECT_URI,
-    scope="playlist-modify-public playlist-modify-private"
+    scope="playlist-modify-public playlist-modify-private",
+    cache_path=cache_file
 ))
+
+with open(cache_file) as f:
+    os.environ["SPOTIFY_AUTH_CACHE"] = f.read()
 
 
 def add_song_to_playlist(song_input):
