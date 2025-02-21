@@ -11,6 +11,7 @@ from helpers.spotify import add_song_to_playlist
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
+# Slack API credentials
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")
 
@@ -28,9 +29,6 @@ BOT_ID = client.api_call("auth.test")["user_id"]
 # Define emojis
 LOADING = "hourglass_flowing_sand"
 DONE = "white_check_mark"
-BOT_NAME = "Javier's Super Awesome Spotify Bot"
-BOT_ICON = ":robot_face:"
-PLAYLIST_ID = os.getenv("PLAYLIST_ID")
 
 
 @slack_events_adapter.on('message')
@@ -39,25 +37,33 @@ def handle_message(payload):
     channel_id = event.get('channel')
     user_id = event.get('user')
 
+    if (DEBUG):
+        print("Received message: ", event)
+
+    # Ignore messages from the bot itself
     if user_id == BOT_ID or user_id is None:
         return
 
+    # Ignore messages in threads
+    if event.get('thread_ts'):
+        return
+
+    # Add loading emoji
     client.reactions_add(
         channel=channel_id,
         name=LOADING,
         timestamp=event.get('ts')
     )
 
-    print("Event received:", event)
-    print("Channel ID:", channel_id)
+    # Get the first line of the message as the song input
+    input = event['text']
+    song_input = input.split("\n")[0]
 
-    # Ignore messages from the bot itself
-    if user_id == BOT_ID:
-        return
-
-    song_input = event['text']
+    # Add song to playlist
     added = add_song_to_playlist(song_input)
+
     if added:
+        # Remove loading emoji and add done emoji
         client.reactions_remove(
             channel=channel_id,
             name=LOADING,
@@ -69,6 +75,7 @@ def handle_message(payload):
             timestamp=event.get('ts')
         )
     else:
+        # Remove loading emoji if song not added
         client.reactions_remove(
             channel=channel_id,
             name=LOADING,

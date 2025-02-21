@@ -1,4 +1,5 @@
 import spotipy
+from pathlib import Path
 from spotipy.oauth2 import SpotifyOAuth
 from spotipy.cache_handler import CacheHandler
 from dotenv import load_dotenv
@@ -8,6 +9,9 @@ import json
 
 logger = logging.getLogger(__name__)
 
+# Load environment variables
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
 load_dotenv()
 
 # Spotify API credentials
@@ -55,7 +59,7 @@ class EnvCacheHandler(CacheHandler):
                 f"Error saving token to environment variable {self.env_var}: {e}")
 
 
-# Authenticate
+# Authenticate with Spotify
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id=SPOTIPY_CLIENT_ID,
     client_secret=SPOTIPY_CLIENT_SECRET,
@@ -66,6 +70,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
 
 
 def add_song_to_playlist(song_input):
+    # Parse the song name and artist
     try:
         song_name, artist = map(str.strip, song_input.split('-'))
     except ValueError:
@@ -81,6 +86,7 @@ def add_song_to_playlist(song_input):
         print("Song not found on Spotify.")
         return
 
+    # Add the song to the playlist
     track_id = tracks[0]['id']
     sp.playlist_add_items(PLAYLIST_ID, [track_id])
     return True
