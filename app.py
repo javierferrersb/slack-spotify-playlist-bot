@@ -63,6 +63,13 @@ def handle_message(payload):
     # Add song to playlist
     added = add_song_to_playlist(song_input)
 
+    # Remove loading emoji
+    client.reactions_remove(
+        channel=channel_id,
+        name=LOADING,
+        timestamp=timestamp
+    )
+
     if added:
         # Add done emoji
         client.reactions_add(
@@ -70,13 +77,6 @@ def handle_message(payload):
             name=DONE,
             timestamp=timestamp
         )
-
-    # Remove loading emoji
-    client.reactions_remove(
-        channel=channel_id,
-        name=LOADING,
-        timestamp=timestamp
-    )
 
 
 if __name__ == "__main__":
