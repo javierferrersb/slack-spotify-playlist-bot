@@ -1,9 +1,8 @@
-import json
 import slack
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from flask import Flask, request, Response
+from flask import Flask
 from slackeventsapi import SlackEventAdapter
 from helpers.spotify import add_song_to_playlist
 
