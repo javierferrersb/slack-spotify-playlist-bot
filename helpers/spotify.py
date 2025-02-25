@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
-load_dotenv()
 
 # Spotify API credentials
 SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
@@ -65,7 +64,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_secret=SPOTIPY_CLIENT_SECRET,
     redirect_uri=SPOTIPY_REDIRECT_URI,
     scope="playlist-modify-public playlist-modify-private",
-    cache_handler=EnvCacheHandler()  # Use env variable instead of a file
+    cache_handler=EnvCacheHandler()  # Use env variable to avoid re-authentication
 ))
 
 

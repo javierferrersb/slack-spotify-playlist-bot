@@ -1,9 +1,8 @@
-import json
 import slack
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from flask import Flask, request, Response
+from flask import Flask
 from slackeventsapi import SlackEventAdapter
 from helpers.spotify import add_song_to_playlist
 
@@ -24,6 +23,7 @@ slack_events_adapter = SlackEventAdapter(
     SLACK_SIGNING_SECRET, "/slack/events", app)
 client = slack.WebClient(token=SLACK_BOT_TOKEN)
 
+# Get bot ID
 BOT_ID = client.api_call("auth.test")["user_id"]
 
 # Define emojis
@@ -36,6 +36,7 @@ def handle_message(payload):
     event = payload.get('event', {})
     channel_id = event.get('channel')
     user_id = event.get('user')
+    timestamp = event.get('ts')
 
     if (DEBUG):
         print("Received message: ", event)
@@ -52,7 +53,7 @@ def handle_message(payload):
     client.reactions_add(
         channel=channel_id,
         name=LOADING,
-        timestamp=event.get('ts')
+        timestamp=timestamp
     )
 
     # Get the first line of the message as the song input
@@ -63,24 +64,19 @@ def handle_message(payload):
     added = add_song_to_playlist(song_input)
 
     if added:
-        # Remove loading emoji and add done emoji
-        client.reactions_remove(
-            channel=channel_id,
-            name=LOADING,
-            timestamp=event.get('ts')
-        )
+        # Add done emoji
         client.reactions_add(
             channel=channel_id,
             name=DONE,
-            timestamp=event.get('ts')
+            timestamp=timestamp
         )
-    else:
-        # Remove loading emoji if song not added
-        client.reactions_remove(
-            channel=channel_id,
-            name=LOADING,
-            timestamp=event.get('ts')
-        )
+
+    # Remove loading emoji
+    client.reactions_remove(
+        channel=channel_id,
+        name=LOADING,
+        timestamp=timestamp
+    )
 
 
 if __name__ == "__main__":
