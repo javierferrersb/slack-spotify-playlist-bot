@@ -23,6 +23,7 @@ slack_events_adapter = SlackEventAdapter(
     SLACK_SIGNING_SECRET, "/slack/events", app)
 client = slack.WebClient(token=SLACK_BOT_TOKEN)
 
+# Get bot ID
 BOT_ID = client.api_call("auth.test")["user_id"]
 
 # Define emojis
@@ -63,24 +64,19 @@ def handle_message(payload):
     added = add_song_to_playlist(song_input)
 
     if added:
-        # Remove loading emoji and add done emoji
-        client.reactions_remove(
-            channel=channel_id,
-            name=LOADING,
-            timestamp=timestamp
-        )
+        # Add done emoji
         client.reactions_add(
             channel=channel_id,
             name=DONE,
             timestamp=timestamp
         )
-    else:
-        # Remove loading emoji if song not added
-        client.reactions_remove(
-            channel=channel_id,
-            name=LOADING,
-            timestamp=timestamp
-        )
+
+    # Remove loading emoji
+    client.reactions_remove(
+        channel=channel_id,
+        name=LOADING,
+        timestamp=timestamp
+    )
 
 
 if __name__ == "__main__":
