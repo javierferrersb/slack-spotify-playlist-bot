@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
-load_dotenv()
 
 # Spotify API credentials
 SPOTIPY_CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")

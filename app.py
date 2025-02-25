@@ -36,6 +36,7 @@ def handle_message(payload):
     event = payload.get('event', {})
     channel_id = event.get('channel')
     user_id = event.get('user')
+    timestamp = event.get('ts')
 
     if (DEBUG):
         print("Received message: ", event)
@@ -52,7 +53,7 @@ def handle_message(payload):
     client.reactions_add(
         channel=channel_id,
         name=LOADING,
-        timestamp=event.get('ts')
+        timestamp=timestamp
     )
 
     # Get the first line of the message as the song input
@@ -67,19 +68,19 @@ def handle_message(payload):
         client.reactions_remove(
             channel=channel_id,
             name=LOADING,
-            timestamp=event.get('ts')
+            timestamp=timestamp
         )
         client.reactions_add(
             channel=channel_id,
             name=DONE,
-            timestamp=event.get('ts')
+            timestamp=timestamp
         )
     else:
         # Remove loading emoji if song not added
         client.reactions_remove(
             channel=channel_id,
             name=LOADING,
-            timestamp=event.get('ts')
+            timestamp=timestamp
         )
 
 
