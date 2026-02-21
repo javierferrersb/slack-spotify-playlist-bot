@@ -57,14 +57,16 @@ def extract_code(user_input: str, oauth: SpotifyOAuth) -> str:
     # If user pasted just the raw code from query params, accept it.
     if parsed.scheme == "" and parsed.netloc == "":
         if " " in user_input:
-            raise RuntimeError("Invalid code input. Paste only the raw code or full callback URL.")
+            raise RuntimeError(
+                "Invalid code input. Paste only the raw code or full callback URL.")
         return user_input
 
     query = parse_qs(parsed.query)
     if "error" in query:
         error = query.get("error", ["unknown_error"])[0]
         description = query.get("error_description", [""])[0]
-        raise RuntimeError(f"Spotify returned an OAuth error: {error} {description}".strip())
+        raise RuntimeError(
+            f"Spotify returned an OAuth error: {error} {description}".strip())
 
     code = oauth.parse_response_code(user_input)
     if code:
