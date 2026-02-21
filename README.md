@@ -26,13 +26,28 @@ A simple Slack bot that listens for song recommendations in a Slack channel and 
    cd slack-spotify-playlist-bot
    ```
 
-2. Install dependencies:
+2. Create and activate a virtual environment:
+
+   ```sh
+   python3 -m venv .venv
+   ```
+
+   - On Linux/macOS:
+     ```sh
+     source .venv/bin/activate
+     ```
+   - On Windows:
+     ```sh
+     .venv\Scripts\activate
+     ```
+
+3. Install dependencies:
 
    ```sh
    pip install -r requirements.txt
    ```
 
-3. Create a `.env` file with your credentials:
+4. Create a `.env` file with your credentials:
 
    ```ini
    SLACK_BOT_TOKEN=your-slack-bot-token
@@ -47,12 +62,12 @@ A simple Slack bot that listens for song recommendations in a Slack channel and 
    Note: Do not use `localhost` for Spotify redirect URI. Use loopback IP such as
    `http://127.0.0.1:8888/callback` in both your Spotify app dashboard and `.env`.
 
-4. Generate `SPOTIFY_AUTH_CACHE`:
+5. Generate `SPOTIFY_AUTH_CACHE`:
 
    The bot reads Spotify token data from `SPOTIFY_AUTH_CACHE`. Use the helper script to generate it.
 
    ```sh
-   .venv/bin/python scripts/get_spotify_auth_cache.py
+   python scripts/get_spotify_auth_cache.py
    ```
 
    The script will:
@@ -67,7 +82,7 @@ A simple Slack bot that listens for song recommendations in a Slack channel and 
    You can also write/update `.env` automatically:
 
    ```sh
-   .venv/bin/python scripts/get_spotify_auth_cache.py --write-env
+   python scripts/get_spotify_auth_cache.py --write-env
    ```
 
 ## Running the Bot
