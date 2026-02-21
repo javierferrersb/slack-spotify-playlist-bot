@@ -39,8 +39,35 @@ A simple Slack bot that listens for song recommendations in a Slack channel and 
    SLACK_SIGNING_SECRET=your-slack-signing-secret
    SPOTIPY_CLIENT_ID=your-spotify-client-id
    SPOTIPY_CLIENT_SECRET=your-spotify-client-secret
-   SPOTIPY_REDIRECT_URI=your-spotify-redirect-uri
+   SPOTIPY_REDIRECT_URI=http://127.0.0.1:8888/callback
    PLAYLIST_ID=your-spotify-playlist-id
+   SPOTIFY_AUTH_CACHE=generated-json-token-cache
+   ```
+
+   Note: Do not use `localhost` for Spotify redirect URI. Use loopback IP such as
+   `http://127.0.0.1:8888/callback` in both your Spotify app dashboard and `.env`.
+
+4. Generate `SPOTIFY_AUTH_CACHE`:
+
+   The bot reads Spotify token data from `SPOTIFY_AUTH_CACHE`. Use the helper script to generate it.
+
+   ```sh
+   .venv/bin/python scripts/get_spotify_auth_cache.py
+   ```
+
+   The script will:
+   - Open (or print) the Spotify authorization URL.
+   - Ask you to paste the full redirect URL after approving access.
+   - Print a ready-to-paste line in this format:
+
+   ```ini
+   SPOTIFY_AUTH_CACHE={"access_token":"...","token_type":"Bearer","expires_in":3600,"refresh_token":"...","scope":"playlist-modify-public playlist-modify-private","expires_at":1234567890}
+   ```
+
+   You can also write/update `.env` automatically:
+
+   ```sh
+   .venv/bin/python scripts/get_spotify_auth_cache.py --write-env
    ```
 
 ## Running the Bot
