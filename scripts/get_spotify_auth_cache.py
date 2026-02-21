@@ -119,7 +119,7 @@ def main() -> int:
     args = parser.parse_args()
 
     env_path = Path(args.env_file)
-    load_dotenv(dotenv_path=env_path)
+    load_dotenv(dotenv_path=env_path, override=True)
 
     client_id = require_env("SPOTIPY_CLIENT_ID")
     client_secret = require_env("SPOTIPY_CLIENT_SECRET")
