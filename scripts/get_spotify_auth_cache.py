@@ -149,8 +149,9 @@ def main() -> int:
     if not args.no_browser:
         try:
             webbrowser.open(auth_url)
-        except Exception:
-            pass
+        except Exception as exc:
+            print(f"Warning: Failed to open web browser automatically: {exc}")
+            print("Please open the authorization URL shown above manually in your browser.")
 
     response_input = input(
         "\nPaste the full redirect URL here (or just the `code` value): "
